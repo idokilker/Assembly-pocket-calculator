@@ -1,0 +1,658 @@
+﻿	MAIN,			BSA		getString				
+					STA		EndProg			//
+					SZA						//	WHILE(( End_prog = GetString)==0){
+					BUN		GOODBYE			//
+					
+	SWITCH,			LDA		OP				//	SWITCH(OP)
+					ADD		ML				//	{
+					SZA						//	CASE ('*')
+					BUN		CHECK_ADDOP		//	{
+					BSA		MULTIPICATION 	//	RESULT=MULTIPICATION(NUM1,NUM2);
+					STA		RESULT			//	BREAK;
+					BUN		MinCheck		//	}
+
+	CHECK_ADDOP,	LDA		OP				//	CASE ('+')
+					ADD		AD				//	{
+					SZA						//	RESULT=ADDING(NUM1,NUM2);
+					BUN		CHECK_SUOP		//	BREAK;
+					BSA		ADDING			//	}
+					STA		RESULT			//
+					BUN		MinCheck		//
+
+	CHECK_SUOP,		LDA		OP				//	CASE ('-')
+					ADD		SU				//	{
+					SZA						//	RESULT=Subtraction(NUM1,NUM2);
+					BUN		CHECK_DIVOP		//	BREAK;
+					BSA		Subtraction		//	}
+					STA		RESULT			//
+					BUN		MinCheck		//
+
+	CHECK_DIVOP,	BSA		DIVING			//	DEFULT{ DIVING(NUM1,NUM2);
+					BUN		MAIN			//	GOTO MAIN; }
+
+	MinCheck,		LDA		EQUAL			//	PRINTF("="%d",RESULT);
+					BSA		PUTC			//
+					LDA		RESULT			//
+					BSA		putSignedInt	//
+					LDA		DD				//
+					BSA		PUTC			//
+					BUN		MAIN			//	GOTO MAIN;
+					
+	GOODBYE,		LDA		ByePtr			//ELSE	
+					BSA		PRINT			//	PRINTF("BYE");
+	FI,				HLT						//RETURN;
+
+
+
+
+	//GETC	FUNCTION
+	GETC,			HEX		0				//
+	CHAR_IN,		SKI						//
+					BUN		CHAR_IN			//
+					INP						//
+	CHAR_OUT,		SKO						//
+					BUN		CHAR_OUT		//
+					OUT						//
+					BUN		GETC	I		//
+
+
+
+
+	//getString FUNCTION
+	getString,		HEX		0				//	
+	rSTART,			LDA		HelloPtr		//RSTART,        PRINTF("%S","> Enter input: ");
+					BSA		PRINT			//
+	START,			BSA		GETC			//START, 	        CC=GETC()
+					STA		CC				//
+	
+					LDA		ENTER			//
+					CMA						//
+					INC						//
+					ADD		CC				//
+					SZA						//	        WHILE (CC!=ENTER)
+					BUN		THEN			//	
+					BUN		EndTwo			//
+	THEN,			LDA		MINUS			//
+					CMA						//
+					INC						//		IF(CC=='-')
+					ADD		CC				//
+					SZA						//		
+					BUN		CONT			//		ELSE	 GOTO COUNT;		[CHECK IF IT THE EXIT SINGED]		
+	MINUS_FLAG,		LDA		BreakFlag		//		THEN 	IF (BREAKFLAG<=0)	
+					SPA						//		
+					BUN		CONT2			//			THEN	GOTO COUNT2;	[TO CHANGE THE FLAGS]		
+					CLA						//			ELSE 	BreakFlag	=0;					
+					STA		BreakFlag		//
+	OPadd,			LDA		CC				//
+					STA		OP				//OPADD,		OP=CC;				[SET THE OP]
+					LDA		NumFlag			//
+					INC						//
+					STA		NumFlag			//		NUMFLAG++;
+					BUN		EndOne			//		GOTO EndOne;
+	CONT2,			LDA		FLAG			//CONT2, 		FLAG++;	
+					INC						//
+					STA		FLAG			//	
+					LDA		BreakFlag		//
+					INC						//		BREAKFLAG++;	
+					STA		BreakFlag		//	
+					BUN		START			//		GOTO START;			[TO GET A NEW CHAR]
+
+	CONT,			LDA		Xhex			//CONT,		IF (CC=='X') 
+					ADD		CC				//
+					SZA						//
+					BUN		CONT1			//
+					LDA		EHAD			//
+					BUN		getString	I	//		RETURN EHAD;
+	CONT1,			LDA		Xhex2			//		IF (CC=='x') 
+					ADD		CC				//
+					SZA						//
+					BUN		CONT8			//
+					LDA		EHAD			//
+					BUN		getString	I	//		RETURN EHAD;
+
+	CONT8,			LDA		PLUS			//COUNT8,	IF(CC='+')
+					CMA						//
+					INC						//
+					ADD		CC				//
+					SZA						//
+					BUN		CONT3			//
+					BUN		OPadd			// 		THEN				[SET THE OP TO '+']
+
+	CONT3,			LDA		MUL				//COUNT3,	IF(CC=='*')
+					CMA						//
+					INC						//
+					ADD		CC				//
+					SZA						//
+					BUN		CONT4			//
+					BUN		OPadd			//		THEN				[SET THE OP TO '*']
+
+	CONT4,			LDA		DIV				//COUNT4,	IF(CC=='/')
+					CMA						//
+					INC						//
+					ADD		CC				//
+					SZA						//
+					BUN		CONT5			//
+					BUN		OPadd			//		THEN				[SET THE OP TO '/']
+
+	CONT5,			LDA		CC				//COUNT5,					[CHECK IF CC<'0' THEN IT'S AN ERROR]
+					ADD		mZERO			//
+					SNA						//
+					BUN		CONT6			//
+					BUN		ERROR			//
+	CONT6,			LDA		CC				//COUNT6,					[CHECK IF CC>'9' THEN IT'S AN ERROR]
+					ADD		mNINE			//
+					SPA						//
+					BUN		CONT7			//
+	ERROR,			LDA		nONE			//
+					BSA		ErrorList		//		ERRORLIST[1];
+					CLA						//		FLAG=0,BreakFlag=0,NumFlag=0,TempNum=0;
+					STA		FLAG			//
+					STA		BreakFlag		//
+					STA		NumFlag			//
+					STA		TempNum			//
+					BUN		rSTART			//		GOTO RSTART;
+
+	CONT7,			CLE						//
+					LDA		TempNum			//	
+					CIL						//
+					CIL						//
+					CIL						//
+					ADD		TempNum			//
+					ADD		TempNum			//
+					STA		TempNum			//
+					LDA		CHECK			//
+					CMA						//
+					INC						//
+					ADD		CC				//
+					ADD		TempNum			//
+					STA		TempNum			//
+					ISZ		BreakFlag		//
+					BUN		START			//	GOTO START;
+	EndOne,			LDA		FLAG			//
+					SPA						//
+					BUN		ONE				//
+					LDA		TempNum			//
+					CMA						//	
+					INC						//
+					STA		NUM1			//
+					CLA						//
+					STA		FLAG			//
+					STA		TempNum			//
+					STA		BreakFlag		//
+					BUN		START			//
+	ONE,			LDA		TempNum			//
+					STA		NUM1			//
+					CLA						//
+					STA		FLAG			//
+					STA		TempNum			//
+					STA		BreakFlag		//
+					BUN		START			//
+	EndTwo,			LDA		FLAG			//
+					SPA						//
+					BUN		TWO				//
+					LDA		TempNum			//
+					CMA						//	
+					INC						//
+					STA		NUM2			//
+					CLA						//
+					STA		FLAG			//
+					STA		TempNum			//
+					STA		BreakFlag		//
+					LDA		EFES			//
+					BUN		getString	I	//
+	TWO,			LDA		TempNum			//
+					STA		NUM2			//
+					CLA						//
+					STA		FLAG			//
+					STA		TempNum			//
+					STA		BreakFlag		//
+					LDA		EFES			//
+					BUN		getString	I	//
+					
+			
+
+					
+	//PRINT FUNCTION				
+	PRINT,			HEX		0				//
+					STA		PrintPtr		//
+					LDA		CR				//
+					BSA		PUTC			//
+	ST,				LDA		PrintPtr	I	//
+					ADD		EndCheck		//
+					SZA						//
+					BUN		PRT				//
+					BUN		ePRINT			//
+	PRT,			LDA		PrintPtr	I	//
+					BSA		PUTC			//
+					ISZ		PrintPtr		//
+					BUN		ST				//
+	ePRINT,			LDA		PrintPtr	I	//
+					BSA		PUTC			//
+					BUN		PRINT	I		//
+
+				
+					
+					
+	//ErrorList FUNCTION				
+	ErrorList,		HEX		0
+					STA		X				//
+					ADD		mEHAD			//
+					SZA						//
+					BUN		GO1				//
+					LDA		EonePTR			//
+					BSA		PRINT			//
+					BUN		ErrorList	I	//
+	GO1,			LDA		X				//
+					ADD		mSHTAIM			//
+					SZA						//
+					BUN		GO2				//
+					LDA		EtwoPTR			//
+					BSA		PRINT			//
+					BUN		ErrorList	I	//
+	GO2,			BUN		ErrorList	I	//
+
+
+	//PUTC FUNCTION
+	PUTC,			HEX		0				//
+	OUTLOOP,		SKO						//
+					BUN		OUTLOOP			//
+					OUT						//
+					BUN		PUTC	I		//
+					
+					
+					
+//MULTIPICATION FUNCTION
+MULTIPICATION,			HEX		0
+						CLA
+						STA		DigitCount
+						STA		MULTRESULT		//DigitCount=0,MULTRESULT=0;
+						LDA		NUM1
+						STA		MULTIPLIER		//MULTIPLIER=NUM1;
+						LDA		NUM2
+						STA		MULTIPLICAND	//MULTIPLICAND=NUM2;
+						LDA		MULTIPLIER
+						CIL
+						SZE						//IF(MULTIPLIER%2!=0)
+						BUN		ODD1			//THEN	GOTO	ODD1; 					[TURN NUM1 TO ITS ABSOLUTE VALUE]
+ODDcheck,				LDA		MULTIPLICAND	//ELSE	IF(MULTIPLICAND%2!=0)
+						CIL
+						SZE
+						BUN		ODD2			//		THEN	GOTO	ODD2; 			[TURN NUM2 TO ITS ABSOLUTE VALUE]
+						BUN		WL				//		ELSE	GOTO	WL;
+ODD1,					ISZ		mnFLAG		
+						LDA		MULTIPLIER
+						CMA
+						INC
+						STA		MULTIPLIER		//ODD1,									[TURN NUM1 TO ITS ABSOLUTE VALUE]
+						BUN		ODDcheck		//		GOTO ODDCHECKL; 				[CHECK IF(MULTIPLICAND%2!=0)]
+ODD2,					ISZ		mnFLAG
+						LDA		MULTIPLICAND
+						CMA
+						INC
+						STA		MULTIPLICAND	//ODD2,									[TURN NUM2 TO ITS ABSOLUTE VALUE]
+						
+WL,						LDA		EIGHT			//WL,	WHILE(DigitCount-8<0)
+						CMA
+						INC
+						ADD		DigitCount
+						SNA
+						BUN		ENDED
+						LDA		MULTIPLIER		//		MULTIPLIER=MULTIPLIER>>1
+						CIR
+						STA		MULTIPLIER		//		IF(MULTIPLIER==0)
+						SZE						//			MULTRESULT=MULTRESULT+MULTIPLICAND;
+						BUN		HAM
+						BUN		HAMSHEH
+HAM,					LDA		MULTRESULT
+						ADD		MULTIPLICAND
+						STA		MULTRESULT
+HAMSHEH,				LDA		MULTIPLICAND	//		MULTIPLICAND=MULTIPLICAND<<1;
+						CIL	
+						STA		MULTIPLICAND
+						ISZ		DigitCount		//		DigitCount
+						BUN		WL				//		GOTO WL;
+						
+ENDED,					LDA		mnFLAG			//IF(MNFLAG==1)
+						ADD		ONEONE			//	MULTRESULT=-MULTRESULT;	
+						SZA
+						BUN		EVENprint
+						LDA		MULTRESULT
+						CMA
+						INC
+						BUN		MULTIPICATION	I
+EVENprint,				LDA		MULTRESULT
+						BUN		MULTIPICATION	I//RETURN MULTRESULT;
+
+
+	//ADDING FUNCTION
+	ADDING,				HEX		0
+						LDA		NUM1
+						ADD		NUM2
+						BUN		ADDING	I
+					
+					
+
+					
+	//Subtraction FUNCTION
+	Subtraction,	HEX		0
+					LDA		NUM2
+					CMA
+					INC
+					ADD		NUM1				
+					BUN		SUBTRACTION	I
+
+					
+					
+					
+
+//putSignedInt FUNCTION
+putSignedInt, 	HEX 		0 				// putSignedInt(short signed int Tnum) {
+				STA 		Tnum			//
+				CLA							//
+				STA			FirstNum		//
+				LDA 		Power10Ptr 		//
+				STA 		Ptr 			// Ptr = @Power10Array
+				LDA 		It_count		//
+				STA 		Count 			// Count = It_count; i.e. 4 in the case of 16 bits
+				LDA 		TNum 			// IF (TNum <0)
+				SNA							//
+				BUN 		Positive		//
+Negative, 		LDA 		TNum 			// THEN
+				CMA 				     	// stripped = -TNum ;
+				INC							//
+				STA 		Stripped 		//
+				LDA 		Sign_ascii		//
+				BSA 		PUTC 			// PUTC(“-“);
+				BUN			ForLoop			//
+Positive, 		LDA 		TNum 			// ELSE stripped = TNum ;
+				STA 		Stripped		// FI
+				SZA
+				BUN			ForLoop			//
+				BUN			EndFor			//
+				
+				
+//
+ForLoop, 		LDA 		Count 				// FOR (Count= It_count; Count > 0; Count--)
+				SPA								//
+				BUN 		EndFor 				//
+				CLA 							// DO digit =0;
+				STA 		Digit 				//
+Loop, 			LDA 		ptr I 				// WHILE (Stripped - *Ptr > 0)
+				ADD 		Stripped	 		// DO
+				SNA								//
+				BUN 		Continue			//
+				BUN 		Outx				//
+Continue, 		STA 		Stripped			// Stripped=Stripped - *Ptr;
+				ISZ 		digit 				// digit++;
+				BUN 		Loop 				// OD;
+Outx, 			LDA 		digit				//
+				SZA								// IF(DIGIT==0)
+				BUN			OutxCont			//
+				LDA			FirstNum			//
+				SPA								//THEN	IF(FirstNum>0)
+				BUN			OutxCont2			//
+				LDA			digit				//
+OutxCont,		ADD 		ascii_Offset 		//
+				BSA 		PUTC				//
+				ISZ			FirstNum			//
+OutxCont2,		ISZ 		ptr 				// ptr++;
+				LDA 		count 				// Count--;
+				ADD 		Minus1 				//
+				STA 		Count 				//
+				BUN 		ForLoop 			// OD;
+EndFor, 		LDA 		Stripped 			//
+				ADD 		ascii_Offset 		//
+				BSA 		PUTC 				// Output(last digit); // print units – the left over in ACC
+				BUN		putSignedInt	I
+					
+					
+					
+					
+//DIVING FUNCTION
+DIVING,				HEX				0
+					CLA
+					STA				DIF			//DIF=0
+					LDA				NUM1		//
+					STA				I			//I=NUM1
+					LDA				NUM2		//
+					STA				J			//J=NUM2
+					SZA
+					BUN				F1
+					LDA				SHTA
+					BSA				ErrorList
+					CLA
+					BUN				DIVING		I
+F1,					LDA				I
+					SNA
+					BUN				F2
+					CMA
+					INC
+					STA				I
+					ISZ				NEGCOUNT
+F2,					LDA				J
+					SNA
+					BUN				F3
+					CMA
+					INC
+					STA				J
+					ISZ				NEGCOUNT
+F3,					LDA				J
+					CMA
+					INC
+					ADD				I
+					SNA
+					BUN				F4
+					BUN				HADPES
+F4,					STA				I
+					ISZ				DIF
+					BUN				F3
+HADPES,				LDA				NEGCOUNT
+					ADD				UNO
+					SZA
+					BUN				HC
+					LDA				MIMI
+					BSA				PUTC
+HC,					LDA				EQ
+					BSA				PUTC
+					LDA				SP
+					BSA				PUTC
+					LDA				DIF
+					BSA				putSignedInt
+					LDA				REM_A
+					BSA				PRINT
+					LDA				I
+					BSA				putSignedInt
+					BUN				DIVING	I					
+
+				
+
+
+// putSignedInt data
+TNum, 				DEC 		0 				// Temp for output
+digit, 				DEC 		0
+Sign_ascii,			HEX 		2D 				// the "-" character
+ascii_Offset,		HEX 		30 				// digit to ascii representation offset
+Stripped, 			DEC 		0 				// +ve value of TNum
+FirstNum,			HEX		0
+
+Minus1, 			DEC		-1
+count, 				DEC 		0
+It_count , 			DEC 		4 				// loop count (for 16 bit integer)
+Power10Ptr, 		HEX 		300 			// @Power10Array
+ptr, 				HEX 		0 				//
+
+					ORG 		300
+Power10Array, 		DEC 		-10000 			// -10 to power of 4
+					DEC 		-1000 			// -10 to power of 3
+					DEC 		-100 			// -10 to power of 2
+					DEC 		-10 			// -10 to power of 1			
+					
+					
+
+					
+	//PRINT FUNC DATA
+	PrintPtr,		HEX		0					//
+	EndCheck,		HEX		FFF3				//
+	CR,				HEX		D					//
+
+
+
+	//MULTIPICATION DATA
+	E,						HEX		0
+	DigitCount,				HEX		0
+	MULTRESULT,				HEX		0
+	ONEONE,					HEX		-1
+	mnFLAG,					HEX		0
+	MULTIPLICAND,			HEX		0
+	MULTIPLIER,				HEX		0
+	EIGHT,					DEC		8
+
+
+
+
+	//getString FUNC DATA
+	NUM1,			HEX		0				//
+	OP,				HEX		0				//
+	NUM2,			HEX		0				//
+	TempNum,		HEX		0				//
+	CC,				HEX		0				//
+	ENTER,			HEX		D				//
+	CHECK,			HEX		30				//
+	MINUS,			HEX		2D				//
+	FLAG,			HEX		0				//
+	BreakFlag,		HEX		0				//
+	NumFlag,		HEX		0				//
+	PLUS,			HEX		2B				//
+	MUL,			HEX		2A				//
+	DIV,			HEX		2F				//
+	mZERO,			HEX		FFD0			//
+	mNINE,			HEX		FFC7			//
+	nONE,			DEC		1				//
+	Xhex,			HEX		FFA8			//
+	Xhex2,			HEX		FF88			//	
+	HelloPtr,		HEX		500				//
+					ORG		500				//
+	HelloArr,		HEX		3E				//"> Enter input: "
+					HEX		20
+					HEX		45
+					HEX		6E
+					HEX		74
+					HEX		65
+					HEX		72
+					HEX		20
+					HEX		69
+					HEX		6E
+					HEX		70
+					HEX		75
+					HEX		74
+					HEX		3A
+					HEX		20
+					HEX		D
+
+
+
+	//MAIN DATA
+	EndProg,		HEX		0	
+	EHAD,			DEC		1
+	EFES,			DEC		0
+	mOP,			HEX		0
+	RESULT,			HEX		0
+	MINS,			HEX		2D
+	EQUAL,			HEX		3D
+	DD,				HEX		D
+
+	ML,				DEC		-42
+	AD,				DEC		-43
+	SU,				DEC		-45
+	DIVISION,		DEC		-47
+
+	ByePtr,			HEX		600
+					ORG		600
+	ByeArray,		HEX		42
+					HEX		79
+					HEX		65
+					HEX		D
+
+
+
+	//ErrorList FUNC DATA
+	X,				HEX		0				//
+	mEHAD,			HEX		FFFF			//
+	mSHTAIM,		HEX		FFFE			//
+	mSHALOSH,		HEX		FFFD			//
+	EonePTR,		HEX		700				//
+	EtwoPTR,		HEX		730				//
+					ORG		700				//
+	Eone,			HEX		3E				// "> ERROR: Bad input\n"
+					HEX		20
+					HEX		45
+					HEX		52
+					HEX		52
+					HEX		4F
+					HEX		52
+					HEX		3A
+					HEX		20
+					HEX		42
+					HEX		61
+					HEX		64
+					HEX		20
+					HEX		69
+					HEX		6E
+					HEX		70
+					HEX		75
+					HEX		74
+					HEX		D
+					ORG		730
+	Etwo,			HEX		3E
+					HEX		20
+					HEX		45
+					HEX		52
+					HEX		52
+					HEX		4F
+					HEX		52
+					HEX		3A
+					HEX		20
+					HEX		64
+					HEX		69
+					HEX		76
+					HEX		69
+					HEX		73
+					HEX		69
+					HEX		6F
+					HEX		6E
+					HEX		20
+					HEX		62
+					HEX		79
+					HEX		20
+					HEX		30
+					HEX		21
+					HEX		D
+										
+//DIVING DATA
+DIF,				HEX				0
+I,					HEX				0
+J,					HEX				0
+SHTA,				DEC				2
+NEGCOUNT,			HEX				0
+DIF_A,				HEX				900
+REM_A,				HEX				950
+					ORG				900
+UNO,				DEC				-1
+MIMI,				HEX				2D
+EQ,					HEX				3D
+SP,					HEX				20
+					ORG				950
+ARRAY_REM,			HEX				52
+					HEX				65
+					HEX				6D
+					HEX				61
+					HEX				69
+					HEX				6E
+					HEX				64
+					HEX				65
+					HEX				72
+					HEX				3A
+					HEX				20
+					HEX				D
+					
+					
