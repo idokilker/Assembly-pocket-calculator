@@ -21,4 +21,4 @@ Major design/implementation decisions:
  
 2. Error handling-
   * bad input- if the input is not a digit between 0-9 or is not a valid operation: '+', '-', '*', '/', 'x', 'X', error message will be printed.("> ERROR: Bad input")
-  * division by zero- if the user tries to divide a number by zero. error message will be printed. (">ERROR: division by 0!")
+  * division by zero- if the user tries to divide a number by zero, an error message will be printed. (">ERROR: division by 0!")
